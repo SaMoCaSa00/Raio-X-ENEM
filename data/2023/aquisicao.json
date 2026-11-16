@@ -1,0 +1,11 @@
+{
+  "ano": 2023,
+  "fonte": "https://download.inep.gov.br/microdados/microdados_enem_2023.zip",
+  "zip_bytes": 549511687,
+  "zip_sha256": "19512b7e29c9c8e940554396969722081341caa275c245a6c9d2d559c5d13a0a",
+  "baixado_em": "2026-11-16T14:10:05Z",
+  "csvs": {
+    "ITENS_PROVA_2023.csv": 330709,
+    "MICRODADOS_ENEM_2023.csv": 1777162429
+  }
+}

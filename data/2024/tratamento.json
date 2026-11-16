@@ -1,0 +1,45 @@
+{
+  "ano": 2024,
+  "arquivos": [
+    "ITENS_PROVA_2024.csv",
+    "PARTICIPANTES_2024.csv",
+    "RESULTADOS_2024.csv"
+  ],
+  "tabela_base": "resultados_2024",
+  "unidas": [
+    "resultados_2024"
+  ],
+  "separadas": [
+    "participantes_2024"
+  ],
+  "linhas": 4332944,
+  "parquet_bytes": 88973702,
+  "csv_bytes": 2145802934,
+  "colunas": [
+    "CO_MUNICIPIO_ESC",
+    "CO_MUNICIPIO_PROVA",
+    "NO_MUNICIPIO_ESC",
+    "NO_MUNICIPIO_PROVA",
+    "NU_ANO",
+    "NU_NOTA_CH",
+    "NU_NOTA_CN",
+    "NU_NOTA_COMP1",
+    "NU_NOTA_COMP2",
+    "NU_NOTA_COMP3",
+    "NU_NOTA_COMP4",
+    "NU_NOTA_COMP5",
+    "NU_NOTA_LC",
+    "NU_NOTA_MT",
+    "NU_NOTA_REDACAO",
+    "NU_SEQUENCIAL",
+    "SG_UF_ESC",
+    "SG_UF_PROVA",
+    "TP_DEPENDENCIA_ADM_ESC",
+    "TP_LOCALIZACAO_ESC",
+    "TP_PRESENCA_CH",
+    "TP_PRESENCA_CN",
+    "TP_PRESENCA_LC",
+    "TP_PRESENCA_MT",
+    "TP_STATUS_REDACAO"
+  ]
+}

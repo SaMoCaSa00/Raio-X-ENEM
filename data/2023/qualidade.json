@@ -1,0 +1,159 @@
+{
+  "linhas": 3933955,
+  "regras": [
+    {
+      "regra": "NU_NOTA_CN fora de 0 a 1000",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "NU_NOTA_CH fora de 0 a 1000",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "NU_NOTA_LC fora de 0 a 1000",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "NU_NOTA_MT fora de 0 a 1000",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "NU_NOTA_REDACAO fora de 0 a 1000",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "redação diferente da soma das 5 competências",
+      "violacoes": 1,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "competência 1 fora de 0 a 200",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "competência 2 fora de 0 a 200",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "competência 3 fora de 0 a 200",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "competência 4 fora de 0 a 200",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "competência 5 fora de 0 a 200",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "presente em CN sem nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": false
+    },
+    {
+      "regra": "ausente em CN com nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "presente em CH sem nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": false
+    },
+    {
+      "regra": "ausente em CH com nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "presente em LC sem nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": false
+    },
+    {
+      "regra": "ausente em LC com nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "presente em MT sem nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": false
+    },
+    {
+      "regra": "ausente em MT com nota",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "inscrição nula",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "renda (Q006) fora do dicionário",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "TP_ESCOLA fora do dicionário",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "UF da prova inválida",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    },
+    {
+      "regra": "inscrição duplicada",
+      "violacoes": 0,
+      "pct": 0.0,
+      "bloqueante": true
+    }
+  ],
+  "nulos_por_nota": {
+    "NU_NOTA_CN": 1241528,
+    "NU_NOTA_CH": 1111312,
+    "NU_NOTA_LC": 1111312,
+    "NU_NOTA_MT": 1241528,
+    "NU_NOTA_REDACAO": 1111312
+  },
+  "aprovado": true,
+  "ano": 2023,
+  "tolerancia_pct": 0.001
+}

@@ -63,10 +63,14 @@ if not ANOS:
 # ───────────── Sidebar ─────────────
 with st.sidebar:
     st.markdown("## 📊 Raio-X do Enem")
-    ano = st.selectbox("Edição", ANOS)
+    ano = st.selectbox("Edição", ANOS, index=ANOS.index(2023) if 2023 in ANOS else 0,
+                       help="2023 é a edição mais recente que permite cruzar nota e questionário socioeconômico.")
     area = st.selectbox("Nota analisada", list(AREAS), index=5, format_func=AREAS.get)
-    st.caption("Fonte: microdados do Enem (INEP). Médias de quem fez os dois dias de prova, sem treineiros. "
-               "Grupos com menos de 30 pessoas ficam de fora.")
+    _r = meta(ano, "resumo")
+    st.caption("Fonte: microdados do Enem (INEP). Médias de quem fez os dois dias de prova"
+               + (", sem treineiros" if "treineiros" in _r else
+                  " (em 2024 os treineiros não podem ser separados, porque essa informação ficou no arquivo de participantes)")
+               + ". Grupos com menos de 30 pessoas ficam de fora.")
 
 R = meta(ano, "resumo")
 st.markdown(f"<h1 style='margin-bottom:0'>Raio-X do <span style='color:{RED}'>Enem {ano}</span></h1>",
@@ -79,7 +83,7 @@ k[0].metric("Inscritos", fmt(R["inscritos"]))
 k[1].metric("Fizeram os 2 dias", fmt(R["presentes_analisados"]))
 k[2].metric("Média geral", f"{R['medias']['geral']:.0f}")
 k[3].metric("Média em Matemática", f"{R['medias']['mt']:.0f}")
-k[4].metric("Redações nota 1000", fmt(R["redacoes_nota_mil"]))
+k[4].metric("Redações nota 1000", fmt(R["redacoes_nota_mil"]), help="Entre os participantes analisados")
 
 t_des, t_mapa, t_notas, t_dados = st.tabs(["⚖️ Desigualdade", "🗺️ Estados e cidades", "📈 Notas", "🧪 Pipeline e qualidade"])
 
@@ -107,11 +111,23 @@ with t_des:
             fig.update_traces(textinfo="percent", sort=False)
             st.plotly_chart(fig, width="stretch")
 
+    else:
+        st.info(f"**Em {ano} não dá pra cruzar renda e nota.** A partir de 2024 o INEP passou a publicar o "
+                "questionário socioeconômico e as notas em arquivos separados, **sem chave em comum**, pra proteger "
+                "a privacidade dos participantes. O pipeline detecta isso sozinho e só gera as análises possíveis "
+                "(rede de ensino, estados e cidades). Pra ver o efeito da renda, escolha 2023 na barra lateral.")
+
+    esc, rede = tabela(ano, "por_escola"), tabela(ano, "por_rede")
     rxe = tabela(ano, "renda_x_escola")
-    if rxe is not None and len(rxe):
-        st.markdown("#### A escola privada explica tudo? Não.")
-        st.caption("Comparando alunos da **mesma faixa de renda**, a diferença entre escola pública e privada diminui. "
-                   "Boa parte do \"efeito escola\" é, na verdade, efeito renda.")
+    if rxe is not None and len(rxe) and esc is not None:
+        e = esc.set_index("escola")[area]
+        piv = rxe.pivot(index="renda_grupo", columns="escola", values=area).dropna()
+        dif = (piv["Privada"] - piv["Pública"])
+        st.markdown(f"#### Escola privada: +{e['Privada'] - e['Pública']:.0f} pontos. Mas quanto disso é renda?")
+        st.caption(f"No geral, quem estudou em escola privada tira {e['Privada'] - e['Pública']:.0f} pontos a mais. "
+                   f"Comparando alunos da **mesma faixa de renda**, a vantagem cai pra algo entre "
+                   f"{dif.min():.0f} e {dif.max():.0f} pontos. Parte do \"efeito escola\" é efeito renda, "
+                   f"mas não tudo: mesmo com a mesma renda, a escola privada continua na frente.")
         rxe = rxe.sort_values("renda_grupo")
         fig = go.Figure()
         for esc, cor in (("Pública", BLUE), ("Privada", RED)):
@@ -119,8 +135,24 @@ with t_des:
             fig.add_trace(go.Scatter(x=sem_prefixo(d["renda_grupo"]), y=d[area], name=esc, mode="lines+markers",
                                      line=dict(color=cor, width=3), marker=dict(size=9)))
         layout(fig, h=360, title=f"{AREAS[area]}: pública × privada em cada faixa de renda",
-               legend=dict(orientation="h", y=1.12))
+               legend=dict(orientation="h", y=-0.15))
         st.plotly_chart(fig, width="stretch")
+
+    if rede is not None and len(rede):
+        r = rede.set_index("rede")[area]
+        if {"Federal", "Privada", "Estadual"} <= set(r.index):
+            st.markdown(f"#### A exceção pública: escolas **federais** ({r['Federal']:.0f}) ficam a "
+                        f"{r['Privada'] - r['Federal']:.0f} pontos da privada ({r['Privada']:.0f}), "
+                        f"bem acima das estaduais ({r['Estadual']:.0f}).")
+            st.caption("Institutos federais e CEFETs são públicos e gratuitos, mas têm processo seletivo. "
+                       "Dados do local da escola informada pelo participante (só concluintes do ensino médio).")
+            rr = rede.sort_values(area)
+            fig = go.Figure(go.Bar(y=rr["rede"], x=rr[area], orientation="h", text=rr[area].round(0),
+                                   textposition="outside",
+                                   marker_color=[RED if x == "Privada" else (BLUE if x == "Federal" else GRAY) for x in rr["rede"]],
+                                   customdata=rr["n"], hovertemplate="%{y}: %{x:.1f}<br>%{customdata:,} alunos<extra></extra>"))
+            layout(fig, h=260, title=f"{AREAS[area]} por rede de ensino", xaxis_range=[0, rr[area].max() * 1.15])
+            st.plotly_chart(fig, width="stretch")
 
     c = st.columns(3)
     for col, (nome, campo, titulo) in zip(c, [("por_escolaridade_mae", "escolaridade_mae", "Escolaridade da mãe"),
@@ -183,7 +215,7 @@ with t_notas:
         fig = px.line(dist, x="faixa", y="n", color="area", line_shape="spline",
                       color_discrete_sequence=[RED, BLUE, "#F59E0B", "#22C55E", "#A78BFA"])
         layout(fig, h=400, title="Distribuição das notas por área", xaxis_title="nota", yaxis_title="alunos",
-               legend=dict(orientation="h", y=1.12, title=""))
+               legend=dict(orientation="h", y=-0.2, title=""))
         st.plotly_chart(fig, width="stretch")
     red = tabela(ano, "redacao")
     if red is not None and len(red):
@@ -194,6 +226,7 @@ with t_notas:
         st.caption(f"{fmt(zeros)} redações com nota zero e {fmt(R['redacoes_nota_mil'])} com nota mil.")
     if len(ANOS) > 1:
         st.markdown("#### Comparando edições")
+        st.caption("Atenção: 2023 exclui treineiros e 2024 não consegue excluir, então a comparação é aproximada.")
         linhas = [{"ano": a, **{AREAS["media_" + k] if "media_" + k in AREAS else k: v
                                 for k, v in meta(a, "resumo")["medias"].items()}} for a in sorted(ANOS)]
         comp = pd.DataFrame(linhas).rename(columns={"geral": "Média geral"}).set_index("ano")

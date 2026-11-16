@@ -1,0 +1,32 @@
+{
+  "ano": 2023,
+  "inscritos": 3933955,
+  "presentes_analisados": 2166843,
+  "medias": {
+    "cn": 497.0,
+    "ch": 527.0,
+    "lc": 520.5,
+    "mt": 532.2,
+    "redacao": 625.8,
+    "geral": 540.5
+  },
+  "redacoes_nota_mil": 57,
+  "maior_nota_mt": 958.6,
+  "mediana_geral": 537.7,
+  "treineiros": 620067,
+  "tabelas": {
+    "por_uf": 27,
+    "por_municipio": 1746,
+    "por_escola": 2,
+    "por_rede": 4,
+    "por_sexo": 2,
+    "por_cor_raca": 6,
+    "por_renda": 8,
+    "por_renda_detalhe": 17,
+    "por_escolaridade_mae": 8,
+    "por_internet": 2,
+    "renda_x_escola": 16,
+    "distribuicao": 172,
+    "redacao": 50
+  }
+}

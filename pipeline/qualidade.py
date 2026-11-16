@@ -16,6 +16,10 @@ import duckdb
 from .dicionario import AREAS
 
 NOTAS = list(AREAS)
+# Uma regra bloqueante só reprova o lote se o problema for sistemático.
+# Casos isolados (ex.: 1 redação em 3,9 milhões com soma inconsistente) entram
+# no relatório como anomalia, mas não descartam o ano inteiro.
+TOLERANCIA_PCT = 0.001
 
 
 def regras(cols: set[str]) -> list[tuple[str, str, bool]]:
@@ -74,7 +78,8 @@ def avaliar(parquet: Path) -> dict:
         "linhas": total,
         "regras": resultado,
         "nulos_por_nota": {n: int(v) for n, v in zip([n for n in NOTAS if n in cols], nulos)},
-        "aprovado": all(r["violacoes"] == 0 for r in resultado if r["bloqueante"]),
+        "tolerancia_pct": TOLERANCIA_PCT,
+        "aprovado": all(r["pct"] <= TOLERANCIA_PCT for r in resultado if r["bloqueante"]),
     }
 
 

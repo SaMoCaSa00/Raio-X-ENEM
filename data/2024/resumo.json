@@ -1,0 +1,23 @@
+{
+  "ano": 2024,
+  "inscritos": 4332944,
+  "presentes_analisados": 2990093,
+  "medias": {
+    "cn": 494.0,
+    "ch": 514.2,
+    "lc": 526.6,
+    "mt": 527.1,
+    "redacao": 634.7,
+    "geral": 539.3
+  },
+  "redacoes_nota_mil": 11,
+  "maior_nota_mt": 961.9,
+  "mediana_geral": 534.7,
+  "tabelas": {
+    "por_uf": 27,
+    "por_municipio": 1752,
+    "por_rede": 4,
+    "distribuicao": 167,
+    "redacao": 50
+  }
+}

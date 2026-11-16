@@ -1,0 +1,12 @@
+{
+  "ano": 2024,
+  "fonte": "https://download.inep.gov.br/microdados/microdados_enem_2024.zip",
+  "zip_bytes": 526073856,
+  "zip_sha256": "69ee52dbcdae61410a7b2c31b776f396f2da30febfc1d2856e9e0ad064c76fb1",
+  "baixado_em": "2026-11-16T14:12:22Z",
+  "csvs": {
+    "ITENS_PROVA_2024.csv": 330676,
+    "PARTICIPANTES_2024.csv": 462022669,
+    "RESULTADOS_2024.csv": 1683449589
+  }
+}
