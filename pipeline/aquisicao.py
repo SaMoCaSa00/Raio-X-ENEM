@@ -13,21 +13,58 @@ import time
 import zipfile
 from pathlib import Path
 
+import ssl
+import tempfile
+from urllib.parse import urlparse
+
+import certifi
 import requests
+from cryptography import x509
+from cryptography.hazmat.primitives.serialization import Encoding
+from cryptography.x509.oid import AuthorityInformationAccessOID, ExtensionOID
 
 URL = "https://download.inep.gov.br/microdados/microdados_enem_{ano}.zip"
 CHUNK = 1 << 20
+
+
+def bundle_com_intermediario(url: str) -> str | bool:
+    """O servidor do INEP manda a cadeia de certificados incompleta (sem o
+    intermediário). Navegadores buscam o que falta sozinhos; o Python não.
+    Aqui fazemos o mesmo que o navegador: lemos no certificado do servidor o
+    endereço do emissor (extensão AIA), baixamos o intermediário e montamos um
+    bundle = certifi + intermediário. A verificação TLS continua completa."""
+    host = urlparse(url).hostname
+    pem = ssl.get_server_certificate((host, 443), timeout=30)  # só pra ler o AIA
+    cert = x509.load_pem_x509_certificate(pem.encode())
+    aia = cert.extensions.get_extension_for_oid(ExtensionOID.AUTHORITY_INFORMATION_ACCESS).value
+    emissores = [d.access_location.value for d in aia if d.access_method == AuthorityInformationAccessOID.CA_ISSUERS]
+    extras = []
+    for u in emissores:
+        dados = requests.get(u, timeout=30).content
+        try:
+            inter = x509.load_der_x509_certificate(dados)
+        except ValueError:
+            inter = x509.load_pem_x509_certificate(dados)
+        extras.append(inter.public_bytes(Encoding.PEM).decode())
+    if not extras:
+        return True
+    f = tempfile.NamedTemporaryFile("w", suffix=".pem", delete=False)
+    f.write(Path(certifi.where()).read_text() + "\n" + "\n".join(extras))
+    f.close()
+    print(f"[aquisição] cadeia do INEP incompleta; intermediário baixado de {emissores[0]}")
+    return f.name
 
 
 def baixar(url: str, destino: Path, tentativas: int = 8) -> Path:
     """Download com retomada via header Range."""
     destino.parent.mkdir(parents=True, exist_ok=True)
     parcial = destino.with_suffix(".part")
+    verify: str | bool = True
     for t in range(1, tentativas + 1):
         ja = parcial.stat().st_size if parcial.exists() else 0
         headers = {"Range": f"bytes={ja}-"} if ja else {}
         try:
-            with requests.get(url, headers=headers, stream=True, timeout=60) as r:
+            with requests.get(url, headers=headers, stream=True, timeout=60, verify=verify) as r:
                 if r.status_code == 416:  # já está completo
                     break
                 r.raise_for_status()
@@ -39,6 +76,12 @@ def baixar(url: str, destino: Path, tentativas: int = 8) -> Path:
                 if total and parcial.stat().st_size < total:
                     raise IOError(f"incompleto: {parcial.stat().st_size} de {total} bytes")
             break
+        except requests.exceptions.SSLError as e:
+            if verify is not True:
+                raise
+            print(f"[aquisição] certificado recusado ({e.__class__.__name__}); completando a cadeia")
+            verify = bundle_com_intermediario(url)
+            continue
         except (requests.RequestException, IOError) as e:
             espera = min(60, 5 * t)
             print(f"[aquisição] tentativa {t} falhou ({e}); nova tentativa em {espera}s")
